@@ -133,7 +133,7 @@ class AddVehicleActivity : AppCompatActivity() {
             photoUri = photoBase64
         )
 
-        VehicleRepository.addVehicle(vehicle)
+        VehicleRepository.addVehicle(this, vehicle)
 
         Toast.makeText(this, getString(R.string.vehicle_saved_successfully), Toast.LENGTH_LONG).show()
         finish()

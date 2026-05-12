@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        VehicleRepository.loadVehicles(this)
 
 
         setSupportActionBar(binding.mainToolbar)
