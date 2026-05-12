@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Vehicle Capture</string>
+    <string name="vehicle_capture">Vehicle Capture</string>
+    <string name="no_vehicles_captured_yet">No vehicles captured yet .\nTap + to add your first vehicle</string>
+    <string name="capture_vehicle_details">Capture vehicle details and photos for inspection records.</string>
+    <string name="add_vehicle">Add vehicle</string>
+    <string name="make_and_model">Make and Model</string>
+    <string name="year">Year</string>
+    <string name="mileage">Mileage</string>
+    <string name="notes">Notes</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="save_vehicle">Save Vehicle</string>
+    <string name="capture_details_for_a_vehicle_inspection_record">Capture details for a vehicle inspection record.</string>
+    <string name="vehicle_photo_preview">Vehicle photo preview</string>
+    <string name="e_g_toyota_rav4">e.g Toyota RAV4</string>
+    <string name="e_g_2020">e.g. 2020</string>
+    <string name="e_g_42500">e.g. 42500</string>
+    <string name="additional_notes_about_the_vehicle">Additional notes about the vehicle</string>
+    <string name="vehicle_saved_successfully">Vehicle saved successfully!</string>
+    <string name="enter_make_and_model">Enter make and model</string>
+    <string name="enter_year">Enter year</string>
+    <string name="enter_mileage">Enter mileage</string>
+</resources>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/addVehicleRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_background"
+    android:orientation="vertical"
+    tools:context=".AddVehicleActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/addVehicleToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/azure"
+        app:title="Add Vehicle"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/abc_ic_ab_back_material"
+        app:navigationIconTint="@android:color/white"
+        tools:ignore="PrivateResource" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="@dimen/screen_padding"
+        tools:ignore="ScrollViewCount">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/capture_details_for_a_vehicle_inspection_record"
+                android:textColor="@color/text_secondary"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/vehiclePhotoImageView"
+                android:layout_marginTop="24dp"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:background="@drawable/bg_photo_placeholder"
+                android:contentDescription="@string/vehicle_photo_preview"
+                android:padding="48dp"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_camera"
+                />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/makeModelInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:expandedHintEnabled="false"
+                android:hint="@string/make_and_model">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/makeModelEditText"
+                    android:hint="@string/e_g_toyota_rav4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/yearInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:expandedHintEnabled="false"
+                android:hint="@string/year">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/yearEditText"
+                    android:layout_width="match_parent"
+                    android:hint="@string/e_g_2020"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/mileageInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:expandedHintEnabled="false"
+                android:hint="@string/mileage">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/mileageEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/e_g_42500"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/notesInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:expandedHintEnabled="false"
+                android:hint="@string/notes">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/notesEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:hint="@string/additional_notes_about_the_vehicle"
+                    android:inputType="textMultiLine"
+                    android:minLines="3" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_marginTop="12dp"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/takePhotoButton"
+                    style="@style/Widget.Material3.Button.IconButton.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cornerRadius="5dp"
+                    app:strokeColor="@color/azure"
+                    android:layout_weight="1"
+                    android:text="@string/take_photo"
+                    app:icon="@android:drawable/ic_menu_camera" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/saveVehicleButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    app:cornerRadius="5dp"
+                    android:layout_weight="1"
+                    android:text="@string/save_vehicle" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
