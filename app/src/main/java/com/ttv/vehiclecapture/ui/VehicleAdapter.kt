@@ -10,11 +10,16 @@ import com.ttv.vehiclecapture.databinding.ItemVehicleBinding
 import com.ttv.vehiclecapture.model.Vehicle
 
 class VehicleAdapter(
-    private var vehicles: List<Vehicle>
+    private var vehicles: List<Vehicle>,
+    private val onDeleteClick: (Vehicle) -> Unit,
+    private val onEditClick: (Vehicle) -> Unit
 ): RecyclerView.Adapter<VehicleAdapter.VehicleViewHolder>() {
 
     class VehicleViewHolder(
-        private val binding: ItemVehicleBinding
+        private val binding: ItemVehicleBinding,
+        private val onDeleteClick: (Vehicle) -> Unit,
+        private val onEditClick: (Vehicle) -> Unit
+
     ): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(vehicle: Vehicle){
@@ -27,6 +32,15 @@ class VehicleAdapter(
             }else{
                 binding.vehiclePhotoImageView.setImageResource(android.R.drawable.ic_menu_camera)
             }
+
+            binding.deleteVehicleButton.setOnClickListener {
+                onDeleteClick(vehicle)
+            }
+
+            binding.editVehicleButton.setOnClickListener {
+                onEditClick(vehicle)
+            }
+
             binding.executePendingBindings()
         }
     }
@@ -34,7 +48,7 @@ class VehicleAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VehicleViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemVehicleBinding.inflate(inflater, parent, false)
-        return VehicleViewHolder(binding)
+        return VehicleViewHolder(binding, onDeleteClick, onEditClick)
     }
 
     override fun onBindViewHolder(

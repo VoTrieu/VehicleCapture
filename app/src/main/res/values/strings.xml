@@ -20,4 +20,12 @@
     <string name="enter_make_and_model">Enter make and model</string>
     <string name="enter_year">Enter year</string>
     <string name="enter_mileage">Enter mileage</string>
+    <string name="delete">Delete</string>
+    <string name="delete_vehicle">Delete vehicle?</string>
+    <string name="cancel">Cancel</string>
+    <string name="this_will_remove_from_the_saved_vehicles">This will remove %1$s from the saved vehicles.</string>
+    <string name="edit">Edit</string>
+    <string name="edit_vehicle">Edit Vehicle</string>
+    <string name="update_vehicle">Update Vehicle</string>
+    <string name="vehicle_updated">Vehicle updated</string>
 </resources>

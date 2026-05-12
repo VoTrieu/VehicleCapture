@@ -37,10 +37,32 @@ object VehicleRepository {
         return System.currentTimeMillis()
     }
 
+    fun getVehicleById(vehicleId: Long): Vehicle? {
+        return vehicles.find { vehicle -> vehicle.id == vehicleId }
+    }
+
+    fun updateVehicle(context: Context, updatedVehicle: Vehicle){
+        val index = vehicles.indexOfFirst { vehicle ->
+            vehicle.id == updatedVehicle.id
+        }
+
+        if(index != -1){
+            vehicles[index] = updatedVehicle
+            saveVehicles(context)
+        }
+    }
+
     private fun saveVehicles(context: Context){
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val vehiclesJson = gson.toJson(vehicles)
 
         prefs.edit { putString(VEHICLES_KEY, vehiclesJson) }
+    }
+
+    fun deleteVehicle(context: Context, vehicleId: Long){
+        vehicles.removeAll{ vehicle ->
+            vehicle.id == vehicleId
+        }
+        saveVehicles(context)
     }
 }

@@ -3,6 +3,7 @@ package com.ttv.vehiclecapture
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -20,10 +21,15 @@ import com.ttv.vehiclecapture.model.Vehicle
 import java.io.ByteArrayOutputStream
 
 class AddVehicleActivity : AppCompatActivity() {
+    companion object {
+        const val EXTRA_VEHICLE_ID = "extra_vehicle_id"
+    }
 
     private lateinit var binding: ActivityAddVehicleBinding
 
     private var vehiclePhotoBitmap: Bitmap? = null
+    private var editingVehicleId: Long? = null
+    private var existingPhotoBase64: String? = null
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val cameraLauncher =
@@ -59,8 +65,11 @@ class AddVehicleActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.add_vehicle)
 
+        editingVehicleId = intent.takeIf { it.hasExtra(EXTRA_VEHICLE_ID) }
+            ?.getLongExtra(EXTRA_VEHICLE_ID, -1L)
+            ?.takeIf { it != -1L }
 
-
+        editingVehicleId?.let { setupEditMode(it) }
 
         binding.takePhotoButton.setOnClickListener {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -122,10 +131,10 @@ class AddVehicleActivity : AppCompatActivity() {
             return
         }
 
-        val photoBase64 = vehiclePhotoBitmap?.let { bitmapToBase64(it) }
+        val photoBase64 = vehiclePhotoBitmap?.let { bitmapToBase64(it) } ?: existingPhotoBase64
 
         val vehicle = Vehicle(
-            id = VehicleRepository.getNextId(),
+            id = editingVehicleId ?: VehicleRepository.getNextId(),
             makeModel = makeModel,
             year = year,
             mileage = mileage,
@@ -133,9 +142,14 @@ class AddVehicleActivity : AppCompatActivity() {
             photoUri = photoBase64
         )
 
-        VehicleRepository.addVehicle(this, vehicle)
+        if(editingVehicleId == null){
+            VehicleRepository.addVehicle(this, vehicle)
+            Toast.makeText(this, getString(R.string.vehicle_saved_successfully), Toast.LENGTH_LONG).show()
+        }else{
+            VehicleRepository.updateVehicle(this, vehicle)
+            Toast.makeText(this, getString(R.string.vehicle_updated), Toast.LENGTH_LONG).show()
+        }
 
-        Toast.makeText(this, getString(R.string.vehicle_saved_successfully), Toast.LENGTH_LONG).show()
         finish()
     }
 
@@ -146,5 +160,28 @@ class AddVehicleActivity : AppCompatActivity() {
         return Base64.encodeToString(imageBytes, Base64.DEFAULT)
     }
 
+    private fun setupEditMode(vehicleId: Long){
+        val vehicle = VehicleRepository.getVehicleById(vehicleId) ?: return
+        supportActionBar?.title = getString(R.string.edit_vehicle)
+        binding.saveVehicleButton.text = getString(R.string.update_vehicle)
+
+        binding.makeModelEditText.setText(vehicle.makeModel)
+        binding.yearEditText.setText(vehicle.year)
+        binding.mileageEditText.setText(vehicle.mileage)
+        binding.notesEditText.setText(vehicle.notes)
+        existingPhotoBase64 = vehicle.photoUri
+
+        existingPhotoBase64?.let {
+            val bitmap = base64ToBitmap(it)
+            binding.vehiclePhotoImageView.setImageBitmap(bitmap)
+        }
+
+
+    }
+
+    private fun base64ToBitmap(base64: String): Bitmap?{
+        val imageBytes = Base64.decode(base64, Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    }
 
 }

@@ -8,6 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.ttv.vehiclecapture.data.VehicleRepository
 import com.ttv.vehiclecapture.databinding.ActivityMainBinding
 import com.ttv.vehiclecapture.model.Vehicle
@@ -20,7 +21,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        vehicleAdapter = VehicleAdapter(emptyList<Vehicle>())
+        vehicleAdapter = VehicleAdapter(emptyList<Vehicle>(),
+        onEditClick = {vehicle ->
+            val intent = Intent(this, AddVehicleActivity::class.java)
+            intent.putExtra(AddVehicleActivity.EXTRA_VEHICLE_ID, vehicle.id)
+            startActivity(intent)
+        },
+        onDeleteClick = {vehicle ->
+           showDeleteConfirmationDialog(vehicle)
+        })
         binding = ActivityMainBinding.inflate(layoutInflater)
         binding.vehiclesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.vehiclesRecyclerView.adapter = vehicleAdapter
@@ -61,5 +70,21 @@ class MainActivity : AppCompatActivity() {
             binding.emptyStateTextView.visibility = View.GONE
             binding.vehiclesRecyclerView.visibility = View.VISIBLE
         }
+    }
+
+    private fun showDeleteConfirmationDialog(vehicle: Vehicle){
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.delete_vehicle))
+            .setMessage(
+                getString(
+                    R.string.this_will_remove_from_the_saved_vehicles,
+                    vehicle.makeModel
+                ))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.delete)){_, _ ->
+                VehicleRepository.deleteVehicle(this,vehicle.id)
+                updateVehicleList()
+            }
+            .show()
     }
 }
