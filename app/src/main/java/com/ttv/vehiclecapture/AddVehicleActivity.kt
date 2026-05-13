@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +26,9 @@ import java.io.ByteArrayOutputStream
 class AddVehicleActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_VEHICLE_ID = "extra_vehicle_id"
+        private const val TAG = "AddVehicleActivity"
     }
+
 
     private lateinit var binding: ActivityAddVehicleBinding
 
@@ -39,6 +42,7 @@ class AddVehicleActivity : AppCompatActivity() {
                 val photo = getCameraThumbnail(result.data)
 
                 if (photo != null) {
+                    Log.d(TAG, "Camera thumbnail received")
                     vehiclePhotoBitmap = photo
                     binding.vehiclePhotoImageView.setImageBitmap(photo)
                 }
@@ -150,9 +154,11 @@ class AddVehicleActivity : AppCompatActivity() {
         )
 
         if(editingVehicleId == null){
+            Log.d(TAG, "Saving new vehicle: $makeModel")
             VehicleRepository.addVehicle(this, vehicle)
             Toast.makeText(this, getString(R.string.vehicle_saved_successfully), Toast.LENGTH_LONG).show()
         }else{
+            Log.d(TAG, "Updating vehicle id: ${vehicle.id}")
             VehicleRepository.updateVehicle(this, vehicle)
             Toast.makeText(this, getString(R.string.vehicle_updated), Toast.LENGTH_LONG).show()
         }

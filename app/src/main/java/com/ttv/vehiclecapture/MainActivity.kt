@@ -2,6 +2,7 @@ package com.ttv.vehiclecapture
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,6 +16,9 @@ import com.ttv.vehiclecapture.model.Vehicle
 import com.ttv.vehiclecapture.ui.VehicleAdapter
 
 class MainActivity : AppCompatActivity() {
+    private companion object {
+        const val TAG = "MainActivity"
+    }
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var vehicleAdapter: VehicleAdapter
@@ -61,6 +65,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateVehicleList(){
         val vehicles = VehicleRepository.getVehicles()
+
+        Log.d(TAG, "Updating vehicle list. Count: ${vehicles.size}")
+
         vehicleAdapter.submitList(vehicles)
 
         if(vehicles.isEmpty()){
