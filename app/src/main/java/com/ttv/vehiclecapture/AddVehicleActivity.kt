@@ -5,23 +5,24 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.ttv.vehiclecapture.data.VehicleRepository
 import com.ttv.vehiclecapture.databinding.ActivityAddVehicleBinding
 import com.ttv.vehiclecapture.model.Vehicle
-import java.io.ByteArrayOutputStream
+import java.io.File
+import androidx.core.net.toUri
 
 class AddVehicleActivity : AppCompatActivity() {
     companion object {
@@ -32,20 +33,15 @@ class AddVehicleActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddVehicleBinding
 
-    private var vehiclePhotoBitmap: Bitmap? = null
     private var editingVehicleId: Long? = null
-    private var existingPhotoBase64: String? = null
+    private var existingPhotoUri: String? = null
+    private var currentPhotoUri: Uri? = null
 
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val photo = getCameraThumbnail(result.data)
-
-                if (photo != null) {
-                    Log.d(TAG, "Camera thumbnail received")
-                    vehiclePhotoBitmap = photo
-                    binding.vehiclePhotoImageView.setImageBitmap(photo)
-                }
+            if (result.resultCode == Activity.RESULT_OK && currentPhotoUri != null) {
+                binding.vehiclePhotoImageView.setImageURI(currentPhotoUri)
+                Log.d(TAG, "Camera thumbnail received")
             }
         }
 
@@ -88,7 +84,7 @@ class AddVehicleActivity : AppCompatActivity() {
         }
 
         binding.saveVehicleButton.setOnClickListener {
-            addNewVehicle()
+            addNewOrUpdateVehicle()
         }
     }
 
@@ -126,7 +122,7 @@ class AddVehicleActivity : AppCompatActivity() {
         return isValid
     }
 
-    private fun addNewVehicle(){
+    private fun addNewOrUpdateVehicle(){
         val makeModel = binding.makeModelEditText.text.toString().trim()
         val year = binding.yearEditText.text.toString().trim()
         val mileage = binding.mileageEditText.text.toString().trim()
@@ -142,7 +138,7 @@ class AddVehicleActivity : AppCompatActivity() {
             return
         }
 
-        val photoBase64 = vehiclePhotoBitmap?.let { bitmapToBase64(it) } ?: existingPhotoBase64
+        val photoUri = currentPhotoUri?.toString() ?: existingPhotoUri
 
         val vehicle = Vehicle(
             id = editingVehicleId ?: VehicleRepository.getNextId(),
@@ -150,7 +146,7 @@ class AddVehicleActivity : AppCompatActivity() {
             year = year,
             mileage = mileage,
             notes = notes,
-            photoUri = photoBase64
+            photoUri = photoUri
         )
 
         if(editingVehicleId == null){
@@ -166,12 +162,6 @@ class AddVehicleActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun bitmapToBase64(bitmap: Bitmap): String{
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
-        val imageBytes = outputStream.toByteArray()
-        return Base64.encodeToString(imageBytes, Base64.DEFAULT)
-    }
 
     private fun setupEditMode(vehicleId: Long){
         val vehicle = VehicleRepository.getVehicleById(vehicleId) ?: return
@@ -182,19 +172,13 @@ class AddVehicleActivity : AppCompatActivity() {
         binding.yearEditText.setText(vehicle.year)
         binding.mileageEditText.setText(vehicle.mileage)
         binding.notesEditText.setText(vehicle.notes)
-        existingPhotoBase64 = vehicle.photoUri
+        existingPhotoUri = vehicle.photoUri
 
-        existingPhotoBase64?.let {
-            val bitmap = base64ToBitmap(it)
-            binding.vehiclePhotoImageView.setImageBitmap(bitmap)
+        existingPhotoUri?.let {
+            binding.vehiclePhotoImageView.setImageURI(existingPhotoUri!!.toUri())
         }
 
 
-    }
-
-    private fun base64ToBitmap(base64: String): Bitmap?{
-        val imageBytes = Base64.decode(base64, Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 
     private fun checkCameraPermissionAndOpenCamera(){
@@ -206,7 +190,10 @@ class AddVehicleActivity : AppCompatActivity() {
         }
     }
     private fun openCamera(){
+        currentPhotoUri = createPhotoUri()
+
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri)
         cameraLauncher.launch(cameraIntent)
     }
 
@@ -217,6 +204,21 @@ class AddVehicleActivity : AppCompatActivity() {
             @Suppress("DEPRECATION")
             data?.extras?.getParcelable("data")
         }
+    }
+
+    private fun createPhotoUri(): Uri{
+        val photoDirectory = File(filesDir, "vehicle_photos")
+
+        if(!photoDirectory.exists()){
+            photoDirectory.mkdirs()
+        }
+
+        val photoFile = File(
+            photoDirectory,
+            "vehicle_${System.currentTimeMillis()}.jpg"
+        )
+
+        return FileProvider.getUriForFile(this, "${packageName}.file_provider", photoFile)
     }
 
 }

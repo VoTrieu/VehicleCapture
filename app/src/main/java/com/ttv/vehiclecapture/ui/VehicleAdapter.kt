@@ -1,10 +1,9 @@
 package com.ttv.vehiclecapture.ui
 
 import android.annotation.SuppressLint
-import android.graphics.BitmapFactory
-import android.util.Base64
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.ttv.vehiclecapture.databinding.ItemVehicleBinding
 import com.ttv.vehiclecapture.model.Vehicle
@@ -26,9 +25,7 @@ class VehicleAdapter(
             binding.vehicle = vehicle
 
             if(vehicle.photoUri != null){
-                val imageBytes = Base64.decode(vehicle.photoUri, Base64.DEFAULT)
-                val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                binding.vehiclePhotoImageView.setImageBitmap(bitmap)
+                binding.vehiclePhotoImageView.setImageURI(vehicle.photoUri.toUri())
             }else{
                 binding.vehiclePhotoImageView.setImageResource(android.R.drawable.ic_menu_camera)
             }
