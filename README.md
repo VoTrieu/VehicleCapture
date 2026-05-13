@@ -46,8 +46,8 @@ This project was created as a Junior Android Developer portfolio project inspire
 
 ## Screenshots
 
-![img.png](img.png)
+## Screenshots
 
-![img_2.png](img_2.png)
-
-![img_1.png](img_1.png)
+| Home | Add Vehicle | Edit Vehicle |
+|------|-------------|--------------|
+| ![Home](screenshots/home.png) | ![Add Vehicle](screenshots/add-vehicle.png) | ![Edit Vehicle](screenshots/edit-vehicle.png) |
