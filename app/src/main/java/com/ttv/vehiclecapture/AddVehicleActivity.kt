@@ -1,7 +1,9 @@
 package com.ttv.vehiclecapture
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
@@ -10,8 +12,8 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -31,11 +33,10 @@ class AddVehicleActivity : AppCompatActivity() {
     private var editingVehicleId: Long? = null
     private var existingPhotoBase64: String? = null
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val photo = result.data?.extras?.getParcelable("data", Bitmap::class.java)
+                val photo = getCameraThumbnail(result.data)
 
                 if (photo != null) {
                     vehiclePhotoBitmap = photo
@@ -44,8 +45,15 @@ class AddVehicleActivity : AppCompatActivity() {
             }
         }
 
+    private val cameraPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted ->
+            if(isGranted){
+                openCamera()
+            }else{
+                Toast.makeText(this, "Camera permission is required to take photos", Toast.LENGTH_LONG).show()
+            }
+        }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,8 +80,7 @@ class AddVehicleActivity : AppCompatActivity() {
         editingVehicleId?.let { setupEditMode(it) }
 
         binding.takePhotoButton.setOnClickListener {
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            cameraLauncher.launch(cameraIntent)
+            checkCameraPermissionAndOpenCamera()
         }
 
         binding.saveVehicleButton.setOnClickListener {
@@ -182,6 +189,28 @@ class AddVehicleActivity : AppCompatActivity() {
     private fun base64ToBitmap(base64: String): Bitmap?{
         val imageBytes = Base64.decode(base64, Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    }
+
+    private fun checkCameraPermissionAndOpenCamera(){
+        val permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        if(permissionStatus ==PackageManager.PERMISSION_GRANTED){
+            openCamera()
+        }else{
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+    private fun openCamera(){
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraLauncher.launch(cameraIntent)
+    }
+
+    private fun getCameraThumbnail(data: Intent?): Bitmap?{
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            data?.extras?.getParcelable("data", Bitmap::class.java)
+        }else{
+            @Suppress("DEPRECATION")
+            data?.extras?.getParcelable("data")
+        }
     }
 
 }
