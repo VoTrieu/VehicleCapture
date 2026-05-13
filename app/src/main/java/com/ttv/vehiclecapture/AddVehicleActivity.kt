@@ -104,18 +104,36 @@ class AddVehicleActivity : AppCompatActivity() {
         binding.yearInputLayout.error = null
         binding.mileageInputLayout.error = null
 
+        val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+        val maxVehicleYear = currentYear + 1
+
         if (makeModel.isEmpty()) {
             binding.makeModelInputLayout.error = getString(R.string.enter_make_and_model)
             isValid = false
         }
 
+        val yearNumber = year.toIntOrNull()
+
         if (year.isEmpty()) {
             binding.yearInputLayout.error = getString(R.string.enter_year)
             isValid = false
+        }else if(yearNumber == null){
+            binding.yearInputLayout.error = "Enter a valid year"
+            isValid = false
+        }else if (yearNumber !in 1900..maxVehicleYear){
+            binding.yearInputLayout.error = "Year must be between 1900 and $maxVehicleYear"
+            isValid = false
         }
+
+        val mileageNumber = mileage.toIntOrNull()
 
         if (mileage.isEmpty()) {
             binding.mileageInputLayout.error = getString(R.string.enter_mileage)
+            isValid = false
+        } else if (mileageNumber == null){
+            binding.mileageInputLayout.error = "Enter a valid mileage"
+        } else if (mileageNumber < 0){
+            binding.mileageInputLayout.error = "Mileage cannot be negative"
             isValid = false
         }
 
