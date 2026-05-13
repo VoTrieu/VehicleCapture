@@ -27,12 +27,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         vehicleAdapter = VehicleAdapter(emptyList<Vehicle>(),
         onEditClick = {vehicle ->
-            val intent = Intent(this, AddVehicleActivity::class.java)
-            intent.putExtra(AddVehicleActivity.EXTRA_VEHICLE_ID, vehicle.id)
-            startActivity(intent)
+           openVehicleEditor(vehicle)
         },
         onDeleteClick = {vehicle ->
            showDeleteConfirmationDialog(vehicle)
+        },
+        onVehicleClick = {vehicle ->
+            openVehicleEditor(vehicle)
         })
         binding = ActivityMainBinding.inflate(layoutInflater)
         binding.vehiclesRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -63,6 +64,12 @@ class MainActivity : AppCompatActivity() {
         updateVehicleList()
     }
 
+    private fun openVehicleEditor(vehicle: Vehicle){
+        val intent = Intent(this, AddVehicleActivity::class.java)
+        intent.putExtra(AddVehicleActivity.EXTRA_VEHICLE_ID, vehicle.id)
+        startActivity(intent)
+    }
+
     private fun updateVehicleList(){
         val vehicles = VehicleRepository.getVehicles()
 
@@ -71,10 +78,10 @@ class MainActivity : AppCompatActivity() {
         vehicleAdapter.submitList(vehicles)
 
         if(vehicles.isEmpty()){
-            binding.emptyStateTextView.visibility = View.VISIBLE
+            binding.emptyStateLayout.visibility = View.VISIBLE
             binding.vehiclesRecyclerView.visibility = View.GONE
         }else{
-            binding.emptyStateTextView.visibility = View.GONE
+            binding.emptyStateLayout.visibility = View.GONE
             binding.vehiclesRecyclerView.visibility = View.VISIBLE
         }
     }

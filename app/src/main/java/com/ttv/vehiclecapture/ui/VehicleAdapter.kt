@@ -11,13 +11,15 @@ import com.ttv.vehiclecapture.model.Vehicle
 class VehicleAdapter(
     private var vehicles: List<Vehicle>,
     private val onDeleteClick: (Vehicle) -> Unit,
-    private val onEditClick: (Vehicle) -> Unit
+    private val onEditClick: (Vehicle) -> Unit,
+    private val onVehicleClick: (Vehicle) -> Unit
 ): RecyclerView.Adapter<VehicleAdapter.VehicleViewHolder>() {
 
     class VehicleViewHolder(
         private val binding: ItemVehicleBinding,
         private val onDeleteClick: (Vehicle) -> Unit,
-        private val onEditClick: (Vehicle) -> Unit
+        private val onEditClick: (Vehicle) -> Unit,
+        private val onVehicleClick: (Vehicle) -> Unit
 
     ): RecyclerView.ViewHolder(binding.root) {
 
@@ -38,6 +40,10 @@ class VehicleAdapter(
                 onEditClick(vehicle)
             }
 
+            binding.root.setOnClickListener{
+                onVehicleClick(vehicle)
+            }
+
             binding.executePendingBindings()
         }
     }
@@ -45,7 +51,11 @@ class VehicleAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VehicleViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemVehicleBinding.inflate(inflater, parent, false)
-        return VehicleViewHolder(binding, onDeleteClick, onEditClick)
+        return VehicleViewHolder(
+            binding,
+            onDeleteClick,
+            onEditClick,
+            onVehicleClick)
     }
 
     override fun onBindViewHolder(

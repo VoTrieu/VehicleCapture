@@ -5,6 +5,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ttv.vehiclecapture.model.Vehicle
 import androidx.core.content.edit
+import androidx.core.net.toUri
+import java.io.File
 
 object VehicleRepository {
     private val vehicles = mutableListOf<Vehicle>()
@@ -60,9 +62,30 @@ object VehicleRepository {
     }
 
     fun deleteVehicle(context: Context, vehicleId: Long){
-        vehicles.removeAll{ vehicle ->
+        val vehicleToDelete = vehicles.find { vehicle ->
             vehicle.id == vehicleId
         }
+
+        if(vehicleToDelete?.photoUri != null){
+            deletePhotoFile(context, vehicleToDelete.photoUri)
+        }
+
+        vehicles.removeAll { vehicle ->
+            vehicle.id == vehicleId
+        }
+
         saveVehicles(context)
+    }
+
+    private fun deletePhotoFile(context: Context, photoUri: String){
+        val uri = photoUri.toUri()
+        if(uri.scheme == "content"){
+            val fileName = uri.lastPathSegment?.substringAfterLast("/") ?: return
+            val photoFile = File(File(context.filesDir, "vehicle_photos"), fileName)
+
+            if (photoFile.exists()){
+                photoFile.delete()
+            }
+        }
     }
 }
